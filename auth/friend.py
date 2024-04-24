@@ -8,7 +8,7 @@ from database_logic.model import User
 router = APIRouter()
 
 @router.post('/create_friendship')
-def create_friendship(user_id: int, friend_id: int, db: Session = Depends(get_db)):
+def create_friendship_route(user_id: int, friend_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
