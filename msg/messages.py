@@ -1,5 +1,4 @@
 from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect
-from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from database import get_db
 from crud import create_message
@@ -34,3 +33,5 @@ async def broadcast_to_user(self, user_id: int, message: str):
             await connection.send_text(message)
 
 ConnectionManager.broadcast_to_user = broadcast_to_user
+
+
