@@ -2,17 +2,67 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'auth/**'
-      - 'chat/**'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
+  build-and-test-auth:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: [auth,chat]
+    defaults:
+      run:
+        working-directory: auth-service
     steps:
       - uses: actions/checkout@v2
-      - name: Build and push Docker image
+      - name: Set up Python for Auth Service
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Auth Service Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Auth Service Tests
+        run: pytest
+
+  build-and-test-msg:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: msg-service
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python for Msg Service
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Msg Service Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Msg Service Tests
+        run: pytest
+
+  deploy-auth:
+    needs: [build-and-test-auth]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Auth Service to Production
+        run: echo "Deploying Auth service to production"
+        # Add actual deployment commands here
+
+  deploy-msg:
+    needs: [build-and-test-msg]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Msg Service to Production
+        run: echo "Deploying Msg service to production"
+        # Add actual deployment commands here
+
 
