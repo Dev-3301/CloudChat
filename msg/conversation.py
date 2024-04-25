@@ -3,7 +3,6 @@ from database import get_db
 from sqlalchemy.orm import Session
 from models import UserFriend, UserConversation
 from schemas import ConversationCreate,User
-from typing import List
 
 
 router = APIRouter()

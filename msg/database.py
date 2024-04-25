@@ -8,9 +8,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 base = declarative_base()
 
 
-def init_database():
-    base.metadata.create_all(bind=engine)
-
 def get_db():
     db = SessionLocal()
     try:
