@@ -1,0 +1,7 @@
+bcrypt==3.2.0
+fastapi==0.110.2
+python-jose==3.3.0
+psycopg2-binary==2.9.9
+pydantic==2.7.1
+sqlalchemy==1.4.34
+uvicorn==0.29.0
