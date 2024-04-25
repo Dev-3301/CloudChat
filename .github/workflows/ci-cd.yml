@@ -78,6 +78,23 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy Msg Service to Production
-        run: echo "Deploying Msg service to production"
-        # Add actual deployment commands here
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build the Docker image
+        run: docker build -t my-image:latest ./msg
+        
+      - name: Tag the Docker image
+        run: docker tag my-image:latest 775959006260.dkr.ecr.us-east-2.amazonaws.com/msg-service:latest
+        
+      - name: Push the Docker image to ECR
+        run: docker push 775959006260.dkr.ecr.us-east-2.amazonaws.com/msg-service:latest
+ 
