@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: auth-service
+        working-directory: auth
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python for Auth Service
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: msg-service
+        working-directory: msg
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python for Msg Service
