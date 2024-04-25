@@ -4,6 +4,8 @@ from database import get_db
 from crud import create_message
 from services import ConnectionManager
 
+
+
 router = APIRouter()
 
 manager = ConnectionManager()
@@ -31,3 +33,5 @@ async def broadcast_to_user(self, user_id: int, message: str):
             await connection.send_text(message)
 
 ConnectionManager.broadcast_to_user = broadcast_to_user
+
+

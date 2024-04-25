@@ -2,17 +2,82 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'auth/**'
-      - 'msg/**'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
+  build-and-test-auth:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: [auth,msg]
+    defaults:
+      run:
+        working-directory: auth
     steps:
       - uses: actions/checkout@v2
-      - name: Build and push Docker image
+      - name: Set up Python for Auth Service
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Auth Service Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      # - name: Run Auth Service Tests
+      #   run: pytest
 
+  build-and-test-msg:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: msg
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python for Msg Service
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Msg Service Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      # - name: Run Msg Service Tests
+      #   run: pytest
+
+  deploy-auth:
+    needs: [build-and-test-auth]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build the Docker image
+        run: docker build -t my-image:latest ./auth
+
+      - name: Tag the Docker image
+        run: docker tag my-image:latest 775959006260.dkr.ecr.us-east-2.amazonaws.com/auth-service:latest
+
+      - name: Push the Docker image to ECR
+        run: docker push 775959006260.dkr.ecr.us-east-2.amazonaws.com/auth-service:latest
+
+  deploy-msg:
+    needs: [build-and-test-msg]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Msg Service to Production
+        run: echo "Deploying Msg service to production"
+        # Add actual deployment commands here
