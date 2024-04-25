@@ -5,13 +5,13 @@ on:
     branches: [ main ]
     paths:
       - 'auth/**'
-      - 'chat/**'
+      - 'msg/**'
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: [auth,chat]
+        services: [auth,msg]
     steps:
       - uses: actions/checkout@v2
       - name: Build and push Docker image
