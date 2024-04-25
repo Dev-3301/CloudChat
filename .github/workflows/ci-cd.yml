@@ -1,0 +1,20 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'auth/**'
+      - 'chat/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [auth,chat]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push Docker image
+        if: contains(github.event.push.commit[*].added, matrix.service) || contains(github.event.push.commits[*].modified, matrix.service)
+        run: |
+          docker build -t my-org/${{}}
