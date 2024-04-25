@@ -64,7 +64,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build the Docker image
-        run: docker build -t my-image:latest .
+        run: docker build -t my-image:latest ./auth
 
       - name: Tag the Docker image
         run: docker tag my-image:latest 775959006260.dkr.ecr.us-east-2.amazonaws.com/auth-service:latest
